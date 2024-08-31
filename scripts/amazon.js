@@ -41,7 +41,7 @@ products.forEach((product) => {
 
     <div class="product-spacer"></div>
 
-    <div class="added-to-cart">
+    <div class="added-to-cart js-added-to-cart" data-product-id="${product.id}">
       <img src="images/icons/checkmark.png">
       Added
     </div>
@@ -56,9 +56,34 @@ products.forEach((product) => {
 
 document.querySelector(".js-products-grid").innerHTML = productsHTML;
 
+let addedCartId;
 document.querySelectorAll(".js-add-to-cart").forEach((button) => {
   button.addEventListener("click", () => {
     const productId = button.dataset.productId;
+
+    // added tick mark appearance
+    document.querySelectorAll(".js-added-to-cart").forEach((check) => {
+      if (productId === check.dataset.productId) {
+        // setTimeout(() => {
+        //   check.style.opacity = 1;
+        // }, 1000);
+
+        // check.style.opacity = 1;
+        if (!addedCartId) {
+          check.classList.add("message");
+          addedCartId = setTimeout(() => {
+            check.classList.remove("message");
+            addedCartId = null;
+          }, 2000);
+        } else {
+          clearTimeout(addedCartId);
+          addedCartId = setTimeout(() => {
+            check.classList.remove("message");
+            addedCartId = null;
+          }, 2000);
+        }
+      }
+    });
 
     let matchingItem;
 
