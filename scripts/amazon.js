@@ -1,11 +1,14 @@
 import { cart, addToCart } from "../data/cart.js";
-import { products } from '../data/products.js';
+import { products, loadProducts } from "../data/products.js";
 import { formatCurrency } from "./utils/money.js";
 
-let productsHTML = "";
+loadProducts(renderProductsGrid);
 
-products.forEach((product) => {
-  productsHTML += `
+function renderProductsGrid() {
+  let productsHTML = "";
+
+  products.forEach((product) => {
+    productsHTML += `
   <div class="product-container">
     <div class="product-image-container">
       <img class="product-image"
@@ -58,50 +61,51 @@ products.forEach((product) => {
     </button>
   </div>
   `;
-});
-
-document.querySelector(".js-products-grid").innerHTML = productsHTML;
-
-
-
-function updateCartQuantity() {
-  let cartQuantity = 0;
-
-  cart.forEach((cartItem) => {
-    cartQuantity += cartItem.quantity;
   });
 
-  document.querySelector(".js-cart-quantity").innerHTML = cartQuantity;
-}
+  document.querySelector(".js-products-grid").innerHTML = productsHTML;
 
-let addedCartId;
-function addedCheckViewer(productId) {
-  document.querySelectorAll(".js-added-to-cart").forEach((check) => {
-    if (productId === check.dataset.productId) {
-      if (!addedCartId) {
-        check.classList.add("message");
-        addedCartId = setTimeout(() => {
-          check.classList.remove("message");
-          addedCartId = null;
-        }, 2000);
-      } else {
-        clearTimeout(addedCartId);
-        addedCartId = setTimeout(() => {
-          check.classList.remove("message");
-          addedCartId = null;
-        }, 2000);
+  function updateCartQuantity() {
+    let cartQuantity = 0;
+
+    cart.forEach((cartItem) => {
+      cartQuantity += cartItem.quantity;
+    });
+
+    document.querySelector(".js-cart-quantity").innerHTML = cartQuantity;
+  }
+
+  let addedCartId;
+  function addedCheckViewer(productId) {
+    document.querySelectorAll(".js-added-to-cart").forEach((check) => {
+      if (productId === check.dataset.productId) {
+        if (!addedCartId) {
+          check.classList.add("message");
+          addedCartId = setTimeout(() => {
+            check.classList.remove("message");
+            addedCartId = null;
+          }, 2000);
+        } else {
+          clearTimeout(addedCartId);
+          addedCartId = setTimeout(() => {
+            check.classList.remove("message");
+            addedCartId = null;
+          }, 2000);
+        }
       }
-    }
+    });
+  }
+
+  document.querySelectorAll(".js-add-to-cart").forEach((button) => {
+    button.addEventListener("click", () => {
+      const productId = button.dataset.productId;
+
+      addedCheckViewer(productId);
+
+      addToCart(productId);
+      updateCartQuantity();
+    });
   });
 }
 
-document.querySelectorAll(".js-add-to-cart").forEach((button) => {
-  button.addEventListener("click", () => {
-    const productId = button.dataset.productId;
-
-    addedCheckViewer(productId);
-
-    addToCart(productId);
-    updateCartQuantity();
-  });
-});
+renderProductsGrid();
